@@ -18,7 +18,6 @@ Required dependencies for this app to work properly:
 This app has been created and tested in django 1.4.5 (the django version for debian wheezy)
 
 1. Add oam in the INSTALLED_APPS
-2. enable cache
 3. include oam.urls file in your root url file.
 4. Set a the required settings in settings.py file:
 
