@@ -1,0 +1,1 @@
+/bin/echo -e "{{ host }}\t{{ service }}\t{{ code }}\t{{ result }}\n" | /usr/sbin/send_nsca -H {{ icinga_host }} -c /etc/send_nsca.cfg > /dev/null

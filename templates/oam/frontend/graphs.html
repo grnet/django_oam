@@ -1,0 +1,19 @@
+{% load i18n %}
+<ul>
+{% for graph_dict in graphs %}
+	{% for md, graph_set in graph_dict.items %}
+		{% for type, graph in graph_set.items %}
+		{% if graph.img %}
+		<li>
+			<div>
+			{{ md }} - {{ type }}
+				<div>
+					<img src="data:image/png;base64, {{ graph.img }}" alt="" height='180px'>
+				</div>
+			</div>
+		</li>
+		{% endif %}
+		{% endfor %}
+	{% endfor %}
+{% endfor %}
+</ul>
