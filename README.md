@@ -21,6 +21,7 @@ This app has been created and tested in django 1.4.5 (the django version for deb
 2. enable cache
 3. include oam.urls file in your root url file.
 4. Set a the required settings in settings.py file:
+
 		NETCONF_USERNAME = 'user-ro'
 		NETCONF_PASSWORD = 'pass'
 
