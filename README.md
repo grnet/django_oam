@@ -7,6 +7,11 @@ implemented in this app. Please note that this repository is a small guide to he
 set up oam on your network in an automated way, and to demostrate how GRNET does it, in order
 to help/inspire/share knowledge.
 
+
+## TNC2015 presentation
+This project was presented in (TNC 2015)[https://tnc15.terena.org/core/presentation/169] in Portugal, in part of
+session "Hardcore Operations"
+
 ## Requirements
 Required dependencies for this app to work properly:
  - ncclient (`ncclient=0.4.3`)
