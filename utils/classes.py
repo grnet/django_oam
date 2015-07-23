@@ -128,42 +128,44 @@ class Applier(object):
         if configuration:
             with manager.connect(host=host, username=settings.NETCONF_USERNAME_RW, password=settings.NETCONF_PASSWORD_RW, hostkey_verify=False, port=22, device_params={"name": "junos"}) as m:
                 assert(":candidate" in m.server_capabilities)
-                try:
-                    edit_response = m.edit_config(target='candidate', config=configuration, test_option='test-then-set')
-                    print edit_response.tostring
-                    edit_is_successful, reason = is_successful(edit_response.tostring)
-                except Exception as e:
-                    m.discard_changes()
-                    return False, e
-                if edit_is_successful:
+                with m.locked(target='candidate'):
                     try:
-                        commit_confirmed_response = m.commit(confirmed=True, timeout="180")
-                        time.sleep(65)
-                        commit_confirmed_is_successful, reason = is_successful(commit_confirmed_response.tostring)
-                        if not commit_confirmed_is_successful:
-                            print 'Oops'
-                            raise Exception()
-                        else:
-                            print "Successfully confirmed committed @ %s" % self.device
+                        edit_response = m.edit_config(target='candidate', config=configuration, test_option='test-then-set')
+                        #print edit_response.tostring
+                        edit_is_successful, reason = is_successful(edit_response.tostring)
                     except Exception as e:
-                        cause = "Caught commit confirmed exception: %s %s" % (e, reason)
-                        cause = cause.replace('\n', '')
-                        print cause
-                        return False, cause
-                    if edit_is_successful and commit_confirmed_is_successful:
+                        m.discard_changes()
+                        return False, e
+                    if edit_is_successful:
                         try:
-                            commit_response = m.commit(confirmed=False)
-                            commit_is_successful, reason = is_successful(commit_response.tostring)
-                            print "Successfully committed @ %s" % self.device
-                            if not commit_is_successful:
+                            commit_confirmed_response = m.commit(confirmed=True, timeout="180")
+                            time.sleep(65)
+                            commit_confirmed_is_successful, reason = is_successful(commit_confirmed_response.tostring)
+                            if not commit_confirmed_is_successful:
+                                print 'Oops'
                                 raise Exception()
                             else:
-                                return True, "Successfully committed"
+                                #print "Successfully confirmed committed @ %s" % self.device
+                                pass
                         except Exception as e:
-                            cause = "Caught commit exception: %s %s" % (e, reason)
+                            cause = "Caught commit confirmed exception: %s %s" % (e, reason)
                             cause = cause.replace('\n', '')
                             print cause
                             return False, cause
+                        if edit_is_successful and commit_confirmed_is_successful:
+                            try:
+                                commit_response = m.commit(confirmed=False)
+                                commit_is_successful, reason = is_successful(commit_response.tostring)
+                               # print "Successfully committed @ %s" % self.device
+                                if not commit_is_successful:
+                                    raise Exception()
+                                else:
+                                    return True, "Successfully committed"
+                            except Exception as e:
+                                cause = "Caught commit exception: %s %s" % (e, reason)
+                                cause = cause.replace('\n', '')
+                                print cause
+                                return False, cause
 
 
 # https://github.com/hughdbrown/dictdiffer

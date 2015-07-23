@@ -38,16 +38,17 @@ def graph_data(host):
         device = parser.export()
         checks = {}
         checks[host] = []
-        for i in device.protocols['oam'].ethernet.connectivity_fault_management.maintenance_domains:
-            md_name = i.name
-            ma = i.maintenance_association
-            ma_name = ma.name
-            mep_name = ma.mep['name']
-            if ma.mep['remote_mep']['name']:
-                remotemep_name = ma.mep['remote_mep']['name']
-                if ma.mep['remote_mep']['sla_iterator_profiles']:
-                    for sla_iter in ma.mep['remote_mep']['sla_iterator_profiles']:
-                        checks[host].append({"md": md_name, "ma": ma_name, "local_mep": mep_name, "remote_mep": remotemep_name, "sla_iter": sla_iter})
+        if device.protocols.get('oam'):
+            for i in device.protocols['oam'].ethernet.connectivity_fault_management.maintenance_domains:
+                md_name = i.name
+                ma = i.maintenance_association
+                ma_name = ma.name
+                mep_name = ma.mep['name']
+                if ma.mep['remote_mep']['name']:
+                    remotemep_name = ma.mep['remote_mep']['name']
+                    if ma.mep['remote_mep']['sla_iterator_profiles']:
+                        for sla_iter in ma.mep['remote_mep']['sla_iterator_profiles']:
+                            checks[host].append({"md": md_name, "ma": ma_name, "local_mep": mep_name, "remote_mep": remotemep_name, "sla_iter": sla_iter})
         if checks[host]:
             for check in checks[host]:
                 rpc_query = sla_iter_rpc_query(check['md'], check['ma'], check['local_mep'], check['remote_mep'])
@@ -80,16 +81,18 @@ def workon(host):
         device = parser.export()
         checks = {}
         checks[host] = []
-        for i in device.protocols['oam'].ethernet.connectivity_fault_management.maintenance_domains:
-            md_name = i.name
-            ma = i.maintenance_association
-            ma_name = ma.name
-            mep_name = ma.mep['name']
-            if ma.mep['remote_mep']['name']:
-                remotemep_name = ma.mep['remote_mep']['name']
-                if ma.mep['remote_mep']['sla_iterator_profiles']:
-                    for sla_iter in ma.mep['remote_mep']['sla_iterator_profiles']:
-                        checks[host].append({"md": md_name, "ma": ma_name, "local_mep": mep_name, "remote_mep": remotemep_name, "sla_iter": sla_iter})
+        if device.protocols.get('oam'):
+            for i in device.protocols['oam'].ethernet.connectivity_fault_management.maintenance_domains:
+                md_name = i.name
+                ma = i.maintenance_association
+                if hasattr(ma, 'name'):
+                    ma_name = ma.name
+                    mep_name = ma.mep['name']
+                    if ma.mep['remote_mep']['name']:
+                        remotemep_name = ma.mep['remote_mep']['name']
+                        if ma.mep['remote_mep']['sla_iterator_profiles']:
+                            for sla_iter in ma.mep['remote_mep']['sla_iterator_profiles']:
+                                checks[host].append({"md": md_name, "ma": ma_name, "local_mep": mep_name, "remote_mep": remotemep_name, "sla_iter": sla_iter})
         if checks[host]:
             for check in checks[host]:
                 rpc_query = icinga_query(check['md'], check['ma'], check['local_mep'], check['remote_mep'])
